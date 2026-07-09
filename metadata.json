@@ -1,0 +1,6 @@
+{
+  "name": "Parelina",
+  "description": "Parelina delivers expert remote ventilation design services, engineered to the highest European standards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

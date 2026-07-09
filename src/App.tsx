@@ -71,11 +71,11 @@ export default function App() {
 
   // Hero video playlist states
   const heroVideos = [
-    "https://dl.dropboxusercontent.com/scl/fi/byfkjs59zggrxvn9u9p0n/CAPCUT-PRVI-VIDEO-v2-16-9.mp4?rlkey=kfy78t3ttghmhcnmkbmgairh3&st=0jh7faq0&dl=1",
-    "https://dl.dropboxusercontent.com/scl/fi/r0o4i91ugkuaox2am1w1i/CAPCUT-DRUGI-VIDEO-v2-16-9.mp4?rlkey=756huq0dy5z5wj7ko4v3f1p68&st=zntzp78y&dl=1"
+    "https://dl.dropboxusercontent.com/scl/fi/byfkjs59zggrxvn9u9p0n/CAPCUT-PRVI-VIDEO-v2-16-9.mp4?rlkey=kfy78t3ttghmhcnmkbmgairh3&st=0jh7faq0&raw=1",
+    "https://dl.dropboxusercontent.com/scl/fi/r0o4i91ugkuaox2am1w1i/CAPCUT-DRUGI-VIDEO-v2-16-9.mp4?rlkey=756huq0dy5z5wj7ko4v3f1p68&st=zntzp78y&raw=1"
   ];
   const [currentHeroVideoIdx, setCurrentHeroVideoIdx] = useState(0);
-  const [video1Opacity, setVideo1Opacity] = useState('opacity-70 md:opacity-80');
+  const [video1Opacity, setVideo1Opacity] = useState('opacity-0');
   const [video2Opacity, setVideo2Opacity] = useState('opacity-0');
   const [video1Z, setVideo1Z] = useState('z-10');
   const [video2Z, setVideo2Z] = useState('z-0');
@@ -95,24 +95,6 @@ export default function App() {
       videoRef2.current.currentTime = 0;
       videoRef2.current.play().catch(e => console.log("videoRef2 play error:", e));
     }
-
-    // Put Video 2 on top, keep Video 1 underneath but fully visible
-    setVideo2Z('z-10');
-    setVideo1Z('z-0');
-    setVideo1Opacity('opacity-70 md:opacity-80');
-
-    // Fade Video 2 in
-    setVideo2Opacity('opacity-70 md:opacity-80');
-
-    // After 200ms transition completes, hide and pause Video 1
-    timeoutRef.current = setTimeout(() => {
-      if (videoRef1.current) {
-        videoRef1.current.pause();
-      }
-      setVideo1Opacity('opacity-0');
-      setCurrentHeroVideoIdx(1);
-      transitioningRef.current = false;
-    }, 200);
   };
 
   const triggerTransitionToVideo1 = () => {
@@ -125,24 +107,56 @@ export default function App() {
       videoRef1.current.currentTime = 0;
       videoRef1.current.play().catch(e => console.log("videoRef1 play error:", e));
     }
+  };
 
-    // Put Video 1 on top, keep Video 2 underneath but fully visible
-    setVideo1Z('z-10');
-    setVideo2Z('z-0');
-    setVideo2Opacity('opacity-70 md:opacity-80');
+  const handleVideo1Playing = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    // Fade Video 1 in
-    setVideo1Opacity('opacity-70 md:opacity-80');
+    if (transitioningRef.current && currentHeroVideoIdx === 1) {
+      // Transitioning from Video 2 to Video 1
+      setVideo1Z('z-10');
+      setVideo2Z('z-0');
+      setVideo2Opacity('opacity-70 md:opacity-80'); // keep under layer visible during crossfade
+      setVideo1Opacity('opacity-70 md:opacity-80');
 
-    // After 200ms transition completes, hide and pause Video 2
-    timeoutRef.current = setTimeout(() => {
-      if (videoRef2.current) {
-        videoRef2.current.pause();
-      }
-      setVideo2Opacity('opacity-0');
-      setCurrentHeroVideoIdx(0);
-      transitioningRef.current = false;
-    }, 200);
+      timeoutRef.current = setTimeout(() => {
+        if (videoRef2.current) {
+          videoRef2.current.pause();
+        }
+        setVideo2Opacity('opacity-0');
+        setCurrentHeroVideoIdx(0);
+        transitioningRef.current = false;
+      }, 200);
+    } else if (currentHeroVideoIdx === 0) {
+      // Initial load or regular playback
+      setVideo1Opacity('opacity-70 md:opacity-80');
+      setVideo1Z('z-10');
+    }
+  };
+
+  const handleVideo2Playing = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    if (transitioningRef.current && currentHeroVideoIdx === 0) {
+      // Transitioning from Video 1 to Video 2
+      setVideo2Z('z-10');
+      setVideo1Z('z-0');
+      setVideo1Opacity('opacity-70 md:opacity-80'); // keep under layer visible during crossfade
+      setVideo2Opacity('opacity-70 md:opacity-80');
+
+      timeoutRef.current = setTimeout(() => {
+        if (videoRef1.current) {
+          videoRef1.current.pause();
+        }
+        setVideo1Opacity('opacity-0');
+        setCurrentHeroVideoIdx(1);
+        transitioningRef.current = false;
+      }, 200);
+    } else if (currentHeroVideoIdx === 1) {
+      // Regular playback of video 2
+      setVideo2Opacity('opacity-70 md:opacity-80');
+      setVideo2Z('z-10');
+    }
   };
 
   const handleHero1Ended = () => {
@@ -256,6 +270,7 @@ export default function App() {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ease-in-out ${video1Z} ${video1Opacity}`}
             src={heroVideos[0]}
             onEnded={handleHero1Ended}
+            onPlaying={handleVideo1Playing}
             referrerPolicy="no-referrer"
           />
           {/* Video 2 (Reverse) */}
@@ -267,6 +282,7 @@ export default function App() {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ease-in-out ${video2Z} ${video2Opacity}`}
             src={heroVideos[1]}
             onEnded={handleHero2Ended}
+            onPlaying={handleVideo2Playing}
             referrerPolicy="no-referrer"
           />
         </motion.div>

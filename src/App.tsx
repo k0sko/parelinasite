@@ -71,8 +71,8 @@ export default function App() {
 
   // Hero video playlist states
   const heroVideos = [
-    "https://www.dropbox.com/scl/fi/byfkjs59zggrxvn9u9p0n/CAPCUT-PRVI-VIDEO-v2-16-9.mp4?rlkey=kfy78t3ttghmhcnmkbmgairh3&st=0jh7faq0&dl=1",
-    "https://www.dropbox.com/scl/fi/r0o4i91ugkuaox2am1w1i/CAPCUT-DRUGI-VIDEO-v2-16-9.mp4?rlkey=756huq0dy5z5wj7ko4v3f1p68&st=zntzp78y&dl=1"
+    "https://dl.dropboxusercontent.com/scl/fi/byfkjs59zggrxvn9u9p0n/CAPCUT-PRVI-VIDEO-v2-16-9.mp4?rlkey=kfy78t3ttghmhcnmkbmgairh3&st=0jh7faq0&dl=1",
+    "https://dl.dropboxusercontent.com/scl/fi/r0o4i91ugkuaox2am1w1i/CAPCUT-DRUGI-VIDEO-v2-16-9.mp4?rlkey=756huq0dy5z5wj7ko4v3f1p68&st=zntzp78y&dl=1"
   ];
   const [currentHeroVideoIdx, setCurrentHeroVideoIdx] = useState(0);
   const [video1Opacity, setVideo1Opacity] = useState('opacity-70 md:opacity-80');
@@ -252,6 +252,7 @@ export default function App() {
             autoPlay
             muted
             playsInline
+            preload="auto"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ease-in-out ${video1Z} ${video1Opacity}`}
             src={heroVideos[0]}
             onEnded={handleHero1Ended}
@@ -262,6 +263,7 @@ export default function App() {
             ref={videoRef2}
             muted
             playsInline
+            preload="auto"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ease-in-out ${video2Z} ${video2Opacity}`}
             src={heroVideos[1]}
             onEnded={handleHero2Ended}
